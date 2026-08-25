@@ -13,6 +13,8 @@ Environment:
   SONAR_PROJECT_KEY  e.g. HoltzTomas_sonarcloud-repsol-demo
   DEVIN_API_KEY      Devin API key of the org that owns the repo
   DEVIN_API_BASE     defaults to https://api.devin.ai
+  DEVIN_PLAYBOOK_ID  saved Devin playbook each session runs with; when unset,
+                     the playbook markdown in this repo is inlined instead
   GITHUB_REPOSITORY  owner/repo, provided by GitHub Actions
   PR_NUMBER          pull request number (omit to scan the branch)
   PR_BRANCH          head branch of that pull request, where fixes are committed
@@ -32,6 +34,7 @@ SONAR_TOKEN = os.environ["SONAR_TOKEN"]
 PROJECT_KEY = os.environ["SONAR_PROJECT_KEY"]
 DEVIN_API_BASE = os.environ.get("DEVIN_API_BASE", "https://api.devin.ai").rstrip("/")
 DEVIN_API_KEY = os.environ["DEVIN_API_KEY"]
+DEVIN_PLAYBOOK_ID = os.environ.get("DEVIN_PLAYBOOK_ID", "").strip()
 REPO = os.environ["GITHUB_REPOSITORY"]
 PR_NUMBER = os.environ.get("PR_NUMBER", "").strip()
 PR_BRANCH = os.environ.get("PR_BRANCH", "").strip()
@@ -99,10 +102,12 @@ def findings():
 
 
 def prompt_for(finding):
-    playbook = PLAYBOOK.read_text()
+    # With a saved playbook Devin already has the instructions, so the prompt
+    # only carries the finding. Without one, inline the playbook from the repo.
+    preamble = "" if DEVIN_PLAYBOOK_ID else PLAYBOOK.read_text() + "\n\n"
     pr_url = f"https://github.com/{REPO}/pull/{PR_NUMBER}" if PR_NUMBER else "(branch scan)"
     return (
-        f"{playbook}\n\n"
+        f"{preamble}"
         "## Finding to work\n"
         f"- Repository: {REPO}\n"
         f"- Pull request: {pr_url}\n"
@@ -123,6 +128,8 @@ def create_session(finding):
         "tags": ["sonar-remediation", finding["kind"].lower()],
         "idempotent": True,
     }
+    if DEVIN_PLAYBOOK_ID:
+        payload["playbook_id"] = DEVIN_PLAYBOOK_ID
     req = urllib.request.Request(
         f"{DEVIN_API_BASE}/v1/sessions",
         data=json.dumps(payload).encode(),
