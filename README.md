@@ -62,11 +62,13 @@ rebota con un 400.
    falso positivo.
    - Real: explota el issue en la UI (captura), aplica el fix mínimo, repite el
      mismo ataque para mostrarlo fallando, verifica que el flujo legítimo sigue
-     andando y abre PR contra la rama `sonar/remediation` con las capturas.
+     andando y commitea el fix **en la misma rama del PR**, comentando el PR con
+     las capturas. No abre PRs nuevos: el fix aparece en el PR que Sonar marcó.
    - Falso positivo: intenta el ataque, captura el intento fallando, no toca el
-     código y devuelve la justificación para marcarlo como "Won't fix" / "Safe"
-     en Sonar.
-4. Se re-corre el scan sobre la rama de remediación: el gate pasa limpio.
+     código y comenta el PR con la justificación para marcarlo como "Won't fix" /
+     "Safe" en Sonar.
+4. El push a la rama del PR re-dispara el scan sobre el mismo PR: el gate pasa
+   limpio, con el falso positivo intacto.
 
 Alternativa sin API: la automation template **SonarQube Quality Gate Fix**
 (Automations en la webapp) hace el paso 2 sin escribir workflow propio. El
@@ -81,8 +83,7 @@ que mostrar el fan-out por hallazgo.
    corra el scanner de CI.
 2. En el repo de GitHub, cargar los secrets `SONAR_TOKEN` (token de SonarCloud)
    y `DEVIN_API_KEY` (API key de la org de Devin dueña del repo).
-3. Crear la rama base de remediación: `git switch -c sonar/remediation && git push -u origin sonar/remediation`.
-4. Abrir un PR con cualquier cambio menor sobre `main` para disparar el scan y
+3. Abrir un PR con cualquier cambio menor sobre `main` para disparar el scan y
    ver el gate en rojo.
 
 ## Talk track (~10 min)
@@ -99,7 +100,8 @@ que mostrar el fan-out por hallazgo.
   SQL injection de `/summary` — misma regla, mismo tipo de código — mostrando el
   ataque rebotando contra el validador. Ese contraste es el argumento entero de
   la demo.
-- **8-10 min** — Los PRs contra `sonar/remediation` y el gate en verde. Cierre:
+- **8-10 min** — El mismo PR con los fixes commiteados por Devin, los
+  comentarios de triage y el gate en verde. Cierre:
   "no reemplazamos a Sonar, le ponemos la capa de inteligencia y ejecución
   encima".
 

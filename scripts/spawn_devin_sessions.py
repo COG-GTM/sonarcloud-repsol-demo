@@ -4,7 +4,8 @@
 Reads the open issues and security hotspots SonarCloud reported for a pull
 request (or a branch), and creates one Devin session per finding. Each session
 triages the finding first (real vulnerability vs false positive) and only then
-remediates, pushing its fix to a shared remediation branch.
+remediates, committing its fix on the pull request's own branch so the fix lands
+in the same pull request that Sonar flagged.
 
 Environment:
   SONAR_TOKEN        SonarCloud token with "Browse" on the project
@@ -14,7 +15,8 @@ Environment:
   DEVIN_API_BASE     defaults to https://api.devin.ai
   GITHUB_REPOSITORY  owner/repo, provided by GitHub Actions
   PR_NUMBER          pull request number (omit to scan the branch)
-  REMEDIATION_BRANCH branch every session targets, defaults to sonar/remediation
+  PR_BRANCH          head branch of that pull request, where fixes are committed
+  REMEDIATION_BRANCH fallback branch for branch scans, defaults to sonar/remediation
   MAX_SESSIONS       safety cap on the fan-out, defaults to 10
 """
 
@@ -32,7 +34,9 @@ DEVIN_API_BASE = os.environ.get("DEVIN_API_BASE", "https://api.devin.ai").rstrip
 DEVIN_API_KEY = os.environ["DEVIN_API_KEY"]
 REPO = os.environ["GITHUB_REPOSITORY"]
 PR_NUMBER = os.environ.get("PR_NUMBER", "").strip()
+PR_BRANCH = os.environ.get("PR_BRANCH", "").strip()
 REMEDIATION_BRANCH = os.environ.get("REMEDIATION_BRANCH", "sonar/remediation")
+TARGET_BRANCH = PR_BRANCH or REMEDIATION_BRANCH
 MAX_SESSIONS = int(os.environ.get("MAX_SESSIONS", "10"))
 
 PLAYBOOK = pathlib.Path(__file__).resolve().parents[1] / "playbooks" / "sonar-triage-remediation.md"
@@ -96,12 +100,13 @@ def findings():
 
 def prompt_for(finding):
     playbook = PLAYBOOK.read_text()
+    pr_url = f"https://github.com/{REPO}/pull/{PR_NUMBER}" if PR_NUMBER else "(branch scan)"
     return (
         f"{playbook}\n\n"
         "## Finding to work\n"
         f"- Repository: {REPO}\n"
-        f"- Pull request: {PR_NUMBER or '(branch scan)'}\n"
-        f"- Remediation branch (base your PR on this branch): {REMEDIATION_BRANCH}\n"
+        f"- Pull request: {pr_url}\n"
+        f"- Branch to commit on (do NOT open a new pull request): {TARGET_BRANCH}\n"
         f"- Sonar key: {finding['key']}\n"
         f"- Type / severity: {finding['kind']} / {finding['severity']}\n"
         f"- Rule: {finding['rule']}\n"
