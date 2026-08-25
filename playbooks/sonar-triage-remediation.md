@@ -4,6 +4,11 @@ You own exactly one SonarCloud finding, described at the end of this prompt.
 Triage it before you touch any code: most of the value here is refusing to
 "fix" what is not actually exploitable.
 
+The finding was raised on an existing pull request. Your work stays inside that
+pull request: you commit on its own branch (given at the end of this prompt) and
+report your verdict as a comment on it. Never open a new pull request, never
+create another branch, and never target the base branch.
+
 ## 0. Boot the app first
 
 This service has a UI, and the UI is how you prove your verdict:
@@ -49,11 +54,17 @@ Otherwise treat it as real.
 - Re-run the exact same browser reproduction against the patched build and
   screenshot it failing to exploit. Then check that the legitimate flow still
   works in the UI (a normal search still returns contracts, a real attachment
-  still downloads) — a fix that breaks the feature is not a fix.
+  still downloads) — a fix that breaks the feature is not a fix. Screen-record
+  that pass over the UI (home, search, contract detail, the affected page) as
+  proof the frontend still works after the change.
 - Run `go build ./...` and `go test ./...`.
-- Open a PR against the remediation branch given below. The PR body must state:
-  the Sonar key and rule, why the finding is real, the exploit path, the fix,
-  and the evidence that it is fixed.
+- Commit the fix on the pull request's own branch and push it, so the existing
+  pull request updates itself and Sonar re-analyses it. Other sessions push to
+  the same branch concurrently: always `git pull --rebase` right before pushing,
+  and retry the rebase-and-push if the push is rejected as non-fast-forward.
+- Comment on the pull request with: the Sonar key and rule, why the finding is
+  real, the exploit path, the fix, and the evidence that it is fixed. Do not
+  open a pull request and do not edit the pull request's description.
 
 ## 4. If it is a false positive
 
@@ -62,15 +73,26 @@ Otherwise treat it as real.
   the payload the rule implies through the UI and screenshot the rejection or
   the harmless output. An unexploitable finding is much more convincing shown
   than argued.
-- Open no PR. Report back with the Sonar key, the rule, the failed exploit
-  attempt, and the argument for why it is not exploitable, citing the specific
-  lines that make it safe (the validator, the allowlist, the escaping, the
-  test-only scope), and recommend marking it as "Won't fix" / "Safe" in
-  SonarCloud with that justification.
+- Push nothing and open no pull request. Comment on the pull request with the
+  Sonar key, the rule, the failed exploit attempt, and the argument for why it
+  is not exploitable, citing the specific lines that make it safe (the
+  validator, the allowlist, the escaping, the test-only scope).
+- Close the finding in SonarCloud yourself, so the quality gate stops being red
+  for something that is not a defect: with the SonarQube MCP server, call
+  `change_sonar_issue_status` on the finding's key with `status=falsepositive`
+  (use `accept` instead when the risk is real but accepted). Then re-read the
+  pull request's quality gate and report whether it turned green. If that MCP
+  server is not available to you, say so in the comment and ask a human to mark
+  it "False positive" / "Won't fix" with your justification.
 
 ## 5. Always
 
-- Keep the change scoped to this one finding.
+- End every comment you leave on the pull request with a link to your own Devin
+  session (`[Devin session](<your session URL>)`), so a reviewer can open the
+  full triage — the reproduction, the commands, the screenshots — behind the
+  verdict you are reporting.
+- Keep the change scoped to this one finding, and to the pull request's branch.
+  Leave every other finding on that branch alone: another session owns it.
 - Record a short verification report (what you ran, what you saw) with the
-  before/after screenshots attached, so a human reviewer can audit the decision
+  before/after screenshots and the screen recording attached, so a human reviewer can audit the decision
   without rerunning it.
