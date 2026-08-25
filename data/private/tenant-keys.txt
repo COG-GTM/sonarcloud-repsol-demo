@@ -1,0 +1,3 @@
+# Fichero interno del servidor: NO debe ser accesible desde la web.
+gis-integration=gis_live_9f2b41c7de6a4f0e
+billing-webhook=whsec_2a71bd4c0e8f45ab
