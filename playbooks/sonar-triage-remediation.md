@@ -87,6 +87,10 @@ Otherwise treat it as real.
 
 ## 5. Always
 
+- End every comment you leave on the pull request with a link to your own Devin
+  session (`[Devin session](<your session URL>)`), so a reviewer can open the
+  full triage — the reproduction, the commands, the screenshots — behind the
+  verdict you are reporting.
 - Keep the change scoped to this one finding, and to the pull request's branch.
   Leave every other finding on that branch alone: another session owns it.
 - Record a short verification report (what you ran, what you saw) with the
