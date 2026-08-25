@@ -76,8 +76,14 @@ Otherwise treat it as real.
 - Push nothing and open no pull request. Comment on the pull request with the
   Sonar key, the rule, the failed exploit attempt, and the argument for why it
   is not exploitable, citing the specific lines that make it safe (the
-  validator, the allowlist, the escaping, the test-only scope), and recommend
-  marking it as "Won't fix" / "Safe" in SonarCloud with that justification.
+  validator, the allowlist, the escaping, the test-only scope).
+- Close the finding in SonarCloud yourself, so the quality gate stops being red
+  for something that is not a defect: with the SonarQube MCP server, call
+  `change_sonar_issue_status` on the finding's key with `status=falsepositive`
+  (use `accept` instead when the risk is real but accepted). Then re-read the
+  pull request's quality gate and report whether it turned green. If that MCP
+  server is not available to you, say so in the comment and ask a human to mark
+  it "False positive" / "Won't fix" with your justification.
 
 ## 5. Always
 

@@ -65,8 +65,9 @@ rebota con un 400.
      andando y commitea el fix **en la misma rama del PR**, comentando el PR con
      las capturas. No abre PRs nuevos: el fix aparece en el PR que Sonar marcó.
    - Falso positivo: intenta el ataque, captura el intento fallando, no toca el
-     código y comenta el PR con la justificación para marcarlo como "Won't fix" /
-     "Safe" en Sonar.
+     código, comenta el PR con la justificación y cierra el finding en Sonar como
+     "False positive" vía el MCP de SonarQube, así el gate deja de estar rojo por
+     algo que no es un defecto.
 4. El push a la rama del PR re-dispara el scan sobre el mismo PR: el gate pasa
    limpio, con el falso positivo intacto.
 
