@@ -9,7 +9,7 @@ remediates, pushing its fix to a shared remediation branch.
 Environment:
   SONAR_TOKEN        SonarCloud token with "Browse" on the project
   SONAR_HOST_URL     defaults to https://sonarcloud.io
-  SONAR_PROJECT_KEY  e.g. cog-gtm_sonarcloud-repsol-demo
+  SONAR_PROJECT_KEY  e.g. HoltzTomas_sonarcloud-repsol-demo
   DEVIN_API_KEY      Devin API key of the org that owns the repo
   DEVIN_API_BASE     defaults to https://api.devin.ai
   GITHUB_REPOSITORY  owner/repo, provided by GitHub Actions

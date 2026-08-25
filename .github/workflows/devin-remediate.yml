@@ -27,7 +27,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
-          SONAR_PROJECT_KEY: cog-gtm_sonarcloud-repsol-demo
+          SONAR_PROJECT_KEY: HoltzTomas_sonarcloud-repsol-demo
           DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.inputs.pr_number || (github.event.workflow_run.pull_requests[0].number || '') }}

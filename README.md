@@ -75,9 +75,9 @@ que mostrar el fan-out por hallazgo.
 
 ## Setup
 
-1. Crear el proyecto en SonarCloud dentro de la org `cog-gtm`
-   (`https://sonarcloud.io/organizations/cog-gtm/projects`), con project key
-   `cog-gtm_sonarcloud-repsol-demo`. Desactivar "Automatic Analysis" para que
+1. Crear el proyecto en SonarCloud dentro de la org `HoltzTomas`
+   (`https://sonarcloud.io/organizations/HoltzTomas/projects`), con project key
+   `HoltzTomas_sonarcloud-repsol-demo`. Desactivar "Automatic Analysis" para que
    corra el scanner de CI.
 2. En el repo de GitHub, cargar los secrets `SONAR_TOKEN` (token de SonarCloud)
    y `DEVIN_API_KEY` (API key de la org de Devin dueña del repo).
