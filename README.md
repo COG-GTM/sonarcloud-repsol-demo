@@ -1,7 +1,7 @@
 # Contract API — demo de remediación con SonarQube/SonarCloud
 
 Repo de demo para el flujo "el scanner encuentra, Devin triage y remedia".
-Simula el sistema de gestión de contratos geoposicionados de Repsol: **app web
+Simula el sistema de gestión de contratos geoposicionados de: **app web
 en Go** (UI + datos seed en SQLite en memoria) + infraestructura Terraform, con
 vulnerabilidades plantadas y **tres falsos positivos deliberados**, que es donde
 está el diferencial frente al scanner.
@@ -70,14 +70,14 @@ rebota con un 400.
 
 Alternativa sin API: la automation template **SonarQube Quality Gate Fix**
 (Automations en la webapp) hace el paso 2 sin escribir workflow propio. El
-script existe porque en cuentas como Repsol el disparo sale del pipeline y hay
+script existe porque en cuentas el disparo sale del pipeline y hay
 que mostrar el fan-out por hallazgo.
 
 ## Setup
 
 1. Crear el proyecto en SonarCloud dentro de la org `cog-gtm`
    (`https://sonarcloud.io/organizations/cog-gtm/projects`), con project key
-   `cog-gtm_sonarcloud-repsol-demo`. Desactivar "Automatic Analysis" para que
+   `cog-gtm_sonarcloud-demo`. Desactivar "Automatic Analysis" para que
    corra el scanner de CI.
 2. En el repo de GitHub, cargar los secrets `SONAR_TOKEN` (token de SonarCloud)
    y `DEVIN_API_KEY` (API key de la org de Devin dueña del repo).
@@ -103,7 +103,7 @@ que mostrar el fan-out por hallazgo.
   "no reemplazamos a Sonar, le ponemos la capa de inteligencia y ejecución
   encima".
 
-## Adaptación a Repsol
+## Adaptación
 
 - El input real son Fortify y OX además de Sonar: el script sólo cambia en la
   función `findings()`; el playbook de triage es el mismo.
